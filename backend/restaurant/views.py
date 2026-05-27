@@ -1,3 +1,4 @@
+import requests
 import uuid
 from django.contrib.auth import authenticate
 from decimal import Decimal
@@ -22,6 +23,7 @@ from .models import (
     Payment,
     CashRegisterSession,
     OnlinePaymentAttempt,
+    ComingSoonVisit,
 )
 from .redsys import build_payment_form, verify_callback_signature, redsys_response_is_paid
 from .serializers import (
@@ -527,3 +529,96 @@ class PublicOrderTrackingView(APIView):
             return Response({"detail": "Order not found for this tracking code and phone."}, status=404)
 
         return Response(CustomerTrackingOrderSerializer(order).data)
+
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        return x_forwarded_for.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR")
+
+
+def lookup_ip_details(ip_address):
+    if not ip_address or ip_address in ["127.0.0.1", "::1", "localhost"]:
+        return {
+            "country": "Localhost",
+            "country_code": "",
+            "city": "Local development",
+            "region": "",
+            "timezone": "",
+            "isp": "",
+        }
+
+    try:
+        response = requests.get(f"https://ipapi.co/{ip_address}/json/", timeout=4)
+        if response.ok:
+            data = response.json()
+            return {
+                "country": data.get("country_name", "") or "",
+                "country_code": data.get("country_code", "") or "",
+                "city": data.get("city", "") or "",
+                "region": data.get("region", "") or "",
+                "timezone": data.get("timezone", "") or "",
+                "isp": data.get("org", "") or "",
+            }
+    except Exception:
+        pass
+
+    return {
+        "country": "",
+        "country_code": "",
+        "city": "",
+        "region": "",
+        "timezone": "",
+        "isp": "",
+    }
+
+
+class ComingSoonVisitTrackView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        ip_address = get_client_ip(request)
+        details = lookup_ip_details(ip_address)
+
+        visit = ComingSoonVisit.objects.create(
+            ip_address=ip_address if ip_address not in ["localhost"] else None,
+            country=details.get("country", ""),
+            country_code=details.get("country_code", ""),
+            city=details.get("city", ""),
+            region=details.get("region", ""),
+            timezone=details.get("timezone", ""),
+            isp=details.get("isp", ""),
+            user_agent=request.META.get("HTTP_USER_AGENT", ""),
+            browser_language=request.data.get("language", "") or request.META.get("HTTP_ACCEPT_LANGUAGE", ""),
+            page_url=request.data.get("page_url", ""),
+            referrer=request.data.get("referrer", ""),
+        )
+
+        return Response({"ok": True, "visit_id": visit.id})
+
+
+class ComingSoonVisitAdminListView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        visits = ComingSoonVisit.objects.all()[:300]
+        data = []
+        for visit in visits:
+            data.append({
+                "id": visit.id,
+                "ip_address": visit.ip_address,
+                "country": visit.country,
+                "country_code": visit.country_code,
+                "city": visit.city,
+                "region": visit.region,
+                "timezone": visit.timezone,
+                "isp": visit.isp,
+                "browser_language": visit.browser_language,
+                "page_url": visit.page_url,
+                "referrer": visit.referrer,
+                "user_agent": visit.user_agent,
+                "created_at": visit.created_at,
+            })
+        return Response(data)

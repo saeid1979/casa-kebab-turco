@@ -13,6 +13,7 @@ from .models import (
     Payment,
     CashRegisterSession,
     OnlinePaymentAttempt,
+    ComingSoonVisit,
 )
 
 
@@ -108,3 +109,33 @@ class OnlinePaymentAttemptAdmin(admin.ModelAdmin):
     ]
     list_filter = ["status", "provider", "created_at"]
     search_fields = ["reference", "bank_transaction_id", "order__customer_name"]
+
+
+
+@admin.register(ComingSoonVisit)
+class ComingSoonVisitAdmin(admin.ModelAdmin):
+    list_display = [
+        "ip_address",
+        "country",
+        "city",
+        "region",
+        "isp",
+        "browser_language",
+        "created_at",
+    ]
+    list_filter = ["country", "city", "created_at"]
+    search_fields = ["ip_address", "country", "city", "region", "isp", "user_agent"]
+    readonly_fields = [
+        "ip_address",
+        "country",
+        "country_code",
+        "city",
+        "region",
+        "timezone",
+        "isp",
+        "user_agent",
+        "browser_language",
+        "page_url",
+        "referrer",
+        "created_at",
+    ]

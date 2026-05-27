@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils import timezone as django_timezone
 
 
 
@@ -11,7 +12,7 @@ class Customer(models.Model):
     last_order_at = models.DateTimeField(null=True, blank=True)
     total_orders = models.PositiveIntegerField(default=0)
     total_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=django_timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -94,7 +95,7 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     cost_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     profit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=django_timezone.now)
 
     class Meta:
         ordering = ['-created_at']
@@ -122,7 +123,7 @@ class Expense(models.Model):
     title = models.CharField(max_length=160)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=120, default='General')
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=django_timezone.now)
     note = models.TextField(blank=True)
 
     class Meta:
@@ -149,7 +150,7 @@ class InventoryItem(models.Model):
     minimum_stock = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     unit_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=django_timezone.now)
 
     class Meta:
         ordering = ['name']
@@ -209,7 +210,7 @@ class Payment(models.Model):
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     debt_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=django_timezone.now)
 
     def __str__(self):
         return f"Payment #{self.id} - Order #{self.order_id}"
@@ -222,7 +223,7 @@ class CashRegisterSession(models.Model):
     expected_cash = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     difference = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     notes = models.TextField(blank=True)
-    opened_at = models.DateTimeField(default=timezone.now)
+    opened_at = models.DateTimeField(default=django_timezone.now)
     closed_at = models.DateTimeField(null=True, blank=True)
     is_closed = models.BooleanField(default=False)
 
@@ -246,8 +247,30 @@ class OnlinePaymentAttempt(models.Model):
     reference = models.CharField(max_length=120, unique=True)
     bank_response_code = models.CharField(max_length=40, blank=True)
     bank_transaction_id = models.CharField(max_length=120, blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=django_timezone.now)
     confirmed_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.provider} - {self.reference}"
+
+
+
+class ComingSoonVisit(models.Model):
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    country = models.CharField(max_length=120, blank=True)
+    country_code = models.CharField(max_length=20, blank=True)
+    city = models.CharField(max_length=120, blank=True)
+    region = models.CharField(max_length=120, blank=True)
+    timezone = models.CharField(max_length=120, blank=True)
+    isp = models.CharField(max_length=200, blank=True)
+    user_agent = models.TextField(blank=True)
+    browser_language = models.CharField(max_length=80, blank=True)
+    page_url = models.TextField(blank=True)
+    referrer = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=django_timezone.now)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.ip_address or 'unknown'} - {self.country or 'unknown'}"

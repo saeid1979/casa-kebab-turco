@@ -30,6 +30,8 @@ from restaurant.views import (
     CustomerLoginView,
     CustomerMeView,
     CustomerMyOrdersView,
+    ComingSoonVisitTrackView,
+    ComingSoonVisitAdminListView,
     PublicOrderTrackingView,
     RedsysCallbackView,
 )
@@ -59,6 +61,8 @@ urlpatterns = [
     path("api/customer/me/", CustomerMeView.as_view(), name="customer_me"),
     path("api/customer/my-orders/", CustomerMyOrdersView.as_view(), name="customer_my_orders"),
     path("api/track-order/", PublicOrderTrackingView.as_view(), name="public_order_tracking"),
+    path("api/coming-soon/visit/", ComingSoonVisitTrackView.as_view(), name="coming_soon_visit"),
+    path("api/coming-soon/visits-admin/", ComingSoonVisitAdminListView.as_view(), name="coming_soon_visits_admin"),
     path("api/current-user/", CurrentUserView.as_view(), name="current_user"),
     path("api/cashier-summary/", CashierSummaryView.as_view(), name="cashier_summary"),
     path("api/profit-loss-summary/", ProfitLossSummaryView.as_view(), name="profit_loss_summary"),
