@@ -434,15 +434,6 @@ class OrderSerializer(serializers.ModelSerializer):
         order_items = validated_data.pop("order_items", [])
         payment_method = validated_data.get("payment_method", "cash_delivery")
 
-        # v42 backend dine-in optional defaults
-        if validated_data.get("order_type") == "dine_in":
-            if not str(validated_data.get("customer_name", "")).strip():
-                validated_data["customer_name"] = "Cliente salón"
-            if not str(validated_data.get("customer_phone", "")).strip():
-                validated_data["customer_phone"] = f"MESA-{timezone.now().strftime('%Y%m%d%H%M%S')}"
-            if not str(validated_data.get("customer_address", "")).strip():
-                validated_data["customer_address"] = "Comer aquí"
-
         if payment_method in ["cash_delivery", "card_delivery"]:
             validated_data["payment_status"] = "pay_on_delivery"
         elif payment_method == "online_card":
@@ -458,7 +449,7 @@ class OrderSerializer(serializers.ModelSerializer):
             address = normalized_address
 
         customer_obj = None
-        if phone and validated_data.get("order_type") != "dine_in":
+        if phone:
             customer_obj, _ = Customer.objects.update_or_create(
                 phone=phone,
                 defaults={

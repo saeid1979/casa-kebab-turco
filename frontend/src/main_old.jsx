@@ -59,174 +59,8 @@ api.interceptors.response.use(
 const translations = {
   es: {
     brandSub: 'Kebab fresco, pedidos rápidos, auténtico sabor turco',
-    customer: 'Cliente',
-    trackingTab: 'Seguimiento',
-    orderDeliveredHidden: 'Este pedido ya fue entregado. No hay información pendiente para mostrar.',
-    myAccount: 'Mi cuenta',
-    orderTracking: 'Seguimiento de pedido',
-    trackingCode: 'Número de seguimiento',
-    trackingCodePlaceholder: 'Ejemplo: CDKT-000032',
-    trackOrderButton: 'Buscar pedido',
-    trackingNotFound: 'No se encontró ningún pedido con este número y teléfono.',
-    trackingHelp: 'Introduce el número de seguimiento y el teléfono usado en el pedido.',
-    registerAccount: 'Crear cuenta',
-    loginAccount: 'Entrar a mi cuenta',
-    customerPassword: 'Contraseña',
-    myOrders: 'Mis pedidos',
-    noOrdersYet: 'Todavía no hay pedidos.',
-    trackingOnlyAccount: 'El seguimiento solo está disponible para pedidos hechos desde esta cuenta.',
-    logoutAccount: 'Salir de la cuenta',
-    admin: 'Admin',
-    accounting: 'Contabilidad',
-    menu: 'Menú',
-    yourOrder: 'Tu pedido',
-    cartEmpty: 'Tu carrito está vacío.',
-    total: 'Total',
-    customerName: 'Nombre del cliente',
-    phone: 'Teléfono',
-    address: 'Dirección o número de mesa',
-    takeaway: 'Para llevar',
-    dineIn: 'Comer aquí',
-    delivery: 'Entrega a domicilio',
-    notes: 'Notas',
-    placeOrder: 'Enviar pedido',
-    paymentMethodCustomer: 'Forma de pago',
-    paymentStatusLabel: 'Estado de pago',
-    paidLabel: 'Pagado',
-    pendingLabel: 'Pendiente',
-    payOnDeliveryLabel: 'Pago al recibir',
-    failedLabel: 'Pago fallido',
-    cashDeliveryLabel: 'Efectivo al recibir',
-    cardDeliveryLabel: 'Tarjeta al recibir',
-    onlineCardLabel: 'Pago online',
-    mixedPaymentLabel: 'Pago mixto',
-    cashOnDelivery: 'Efectivo al recibir',
-    cardOnDelivery: 'Datáfono al recibir',
-    onlineCardPayment: 'Pago online con tarjeta',
-    simulateBankPayment: 'Simular pago BBVA/Redsys',
-    paymentApproved: 'Pago aprobado',
-    paymentPendingDelivery: 'Pago al recibir pendiente',
-    orderConfirmed: 'Pedido confirmado',
-    trackingNumber: 'Número de seguimiento',
-    orderSummary: 'Resumen del pedido',
-    restaurantPhone: 'Teléfono del restaurante',
-    callNow: 'Llamar ahora',
-    close: 'Cerrar',
-    successBlink: '¡Pedido enviado correctamente!',
-    thankYouOrder: 'Gracias por tu pedido. Lo prepararemos lo antes posible.',
-    addToCart: 'Añadir',
-    required: 'Introduce nombre, teléfono, dirección/mesa y elige al menos un producto.',
-    fieldRequired: 'Este campo es obligatorio.',
-    completeRequiredFields: 'Completa los campos marcados en rojo.',
-    orderOk: 'Pedido creado correctamente. ID',
-    orderFail: 'No se pudo crear el pedido.',
-    backendFail: 'No se pudo conectar con el servidor.',
-    language: 'Idioma',
-    loginTitle: 'Acceso del personal',
-    username: 'Usuario',
-    password: 'Contraseña',
-    login: 'Entrar',
-    logout: 'Salir',
-    loginError: 'Usuario o contraseña incorrectos.',
-    protectedHint: 'Esta sección es solo para personal autorizado.',
-    role: 'Rol',
-    cashier: 'Caja',
-    kitchen: 'Cocina',
-    deliveryRole: 'Repartidor',
-    liveManagement: 'Gestión de pedidos en vivo',
-    cashierPanel: 'Caja y pagos',
-    paymentMethod: 'Método de pago',
-    cash: 'Efectivo',
-    card: 'Tarjeta',
-    debt: 'Deuda',
-    discount: 'Descuento',
-    registerPayment: 'Registrar pago',
-    openCash: 'Abrir caja',
-    closeCash: 'Cerrar caja',
-    openingCash: 'Caja inicial',
-    closingCash: 'Caja final',
-    profitLoss: 'Pérdidas y ganancias',
-    materialCost: 'Coste de materiales',
-    grossProfit: 'Beneficio bruto',
-    dailyExpenses: 'Gastos diarios',
-    netProfit: 'Beneficio neto',
-    adminHelp: 'Gestiona pedidos, menú, inventario y caja según el rol del usuario.',
-    adminTabs: 'Secciones',
-    tabLive: 'Pedidos en vivo',
-    tabRiders: 'Repartidores',
-    tabCashier: 'Caja',
-    tabCustomers: 'Clientes',
-    tabInventory: 'Inventario',
-    tabMenu: 'Menú',
-    tabHistory: 'Historial',
-    tabSettings: 'Configuración',
-    todaySales: 'Ventas de hoy',
-    todayOrders: 'Pedidos de hoy',
-    activeOrders: 'Pedidos activos',
-    newOrdersCount: 'Pedidos nuevos',
-    topFood: 'Comida más vendida',
-    monthIncome: 'Ingresos del mes',
-    recentOrders: 'Pedidos recientes',
-    orderItems: 'Productos',
-    type: 'Tipo',
-    status: 'Estado',
-    changeStatus: 'Cambiar estado',
-    printReceipt: 'Imprimir recibo',
-    sendWhatsapp: 'Enviar por WhatsApp',
-    allStatuses: 'Todos los estados',
-    searchOrders: 'Buscar pedido, cliente o teléfono',
-    orderStatusNew: 'Nuevo',
-    orderStatusPreparing: 'Preparando',
-    orderStatusReady: 'Listo',
-    orderStatusDelivered: 'Entregado',
-    orderStatusCancelled: 'Cancelado',
-    addFood: 'Añadir comida',
-    foodName: 'Nombre del producto',
-    price: 'Precio',
-    description: 'Descripción',
-    available: 'Disponible',
-    save: 'Guardar',
-    created: 'Creado correctamente',
-    updated: 'Actualizado correctamente',
-    customers: 'Clientes',
-    customerDatabase: 'Base de datos de clientes',
-    customerRepeat: 'Cliente recurrente',
-    lastOrder: 'Último pedido',
-    totalSpent: 'Total gastado',
-    menuManagement: 'Gestión del menú',
-    categories: 'Categorías',
-    addCategory: 'Añadir categoría',
-    categoryName: 'Nombre de categoría',
-    allCategories: 'Todos',
-    editFood: 'Editar comida',
-    deleteFood: 'Eliminar',
-    updateFood: 'Actualizar comida',
-    cancelEdit: 'Cancelar edición',
-    foodImage: 'Imagen del producto',
-    imageOptional: 'Imagen opcional',
-    noImage: 'Sin imagen',
-    inventory: 'Inventario',
-    addInventory: 'Añadir material',
-    materialName: 'Nombre del material',
-    unit: 'Unidad',
-    currentStock: 'Stock actual',
-    minimumStock: 'Stock mínimo',
-    unitCost: 'Coste unitario',
-    lowStock: 'Stock bajo',
-    inventoryValue: 'Valor del inventario',
-    linkIngredient: 'Vincular ingrediente al producto',
-    quantityRequired: 'Cantidad necesaria',
-    refresh: 'Actualizar',
-    soundOn: 'Sonido activado',
-    soundOff: 'Sonido desactivado',
-    testSound: 'Probar sonido',
-    newOrderAlert: 'Nuevo pedido recibido',
-    telegramSent: 'Enviado a Telegram',
-    telegramNotConfigured: 'Telegram no configurado o no enviado',
-  },
-
   en: {
-    brandSub: 'Fresh kebab, fast orders, authentic Turkish taste',
+    brandSub: 'Fresh kebab, fast orders, authentic Turkish taste', fast orders, authentic Turkish taste',
     customer: 'Customer',
     trackingTab: 'Tracking',
     orderDeliveredHidden: 'This order has already been delivered. There is no pending information to show.',
@@ -312,7 +146,6 @@ const translations = {
     tabInventory: 'Inventory',
     tabMenu: 'Menu',
     tabHistory: 'History',
-    tabSettings: 'Settings',
     todaySales: 'Today sales',
     todayOrders: 'Today orders',
     activeOrders: 'Active orders',
@@ -443,7 +276,7 @@ function FancyDateTime({ lang = 'es', compact = false }) {
 }
 
 
-function Header({ page, setPage, lang, setLang, t, isAdmin, currentUser, logout, restaurantSettings }) {
+function Header({ page, setPage, lang, setLang, t, isAdmin, currentUser, logout }) {
   const role = currentUser?.role;
   const roleLabel = role === 'cashier' ? t.cashier : role === 'kitchen' ? t.kitchen : role === 'delivery' ? t.deliveryRole : t.admin;
 
@@ -454,7 +287,7 @@ function Header({ page, setPage, lang, setLang, t, isAdmin, currentUser, logout,
         <div className="brand-text">
           <div className="brand-title-row">
             <h1>{restaurantSettings?.name || 'Casa de Kebab Turco'}</h1>
-            <a className="header-phone-pill" href={`tel:${restaurantSettings?.phone || '+34613473564'}`}>☎ {restaurantSettings?.phone || '+34 613 473 564'}</a>
+            <a className="header-phone-pill" href={`tel:+${RESTAURANT_PHONE}`}>☎ {restaurantSettings?.phone || '+34 613 473 564'}</a>
           </div>
           <p>{t.brandSub}</p>
         </div>
@@ -1025,8 +858,6 @@ function CustomerPage({ lang, t }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [cart, setCart] = useState([]);
   const [customer, setCustomer] = useState({ customer_name: '', customer_phone: '', customer_address: '', order_type: 'takeaway', payment_method: 'cash_delivery', notes: '' });
-  const isStaffOrderingModeV42 = Boolean(localStorage.getItem('admin_access_token'));
-  const isDineInOrderV42 = customer.order_type === 'dine_in';
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [lastOrder, setLastOrder] = useState(null);
@@ -1045,14 +876,6 @@ function CustomerPage({ lang, t }) {
       .then(res => setMenu(res.data.filter(x => x.is_available)))
       .catch(() => setMessage(t.backendFail));
   }, []);
-
-
-  // v42 force public customers away from dine_in
-  useEffect(() => {
-    if (!isStaffOrderingModeV42 && customer.order_type === 'dine_in') {
-      setCustomer(prev => ({ ...prev, order_type: 'takeaway' }));
-    }
-  }, [isStaffOrderingModeV42, customer.order_type]);
 
   const addToCart = item => {
     setCart(prev => {
@@ -1080,12 +903,9 @@ function CustomerPage({ lang, t }) {
 
   const validateOrder = () => {
     const nextErrors = {};
-    const dineInByStaff = isStaffOrderingModeV42 && customer.order_type === 'dine_in';
-
-    if (!dineInByStaff && !customer.customer_name.trim()) nextErrors.customer_name = true;
-    if (!dineInByStaff && !customer.customer_phone.trim()) nextErrors.customer_phone = true;
-    if (!dineInByStaff && !customer.customer_address.trim()) nextErrors.customer_address = true;
-
+    if (!customer.customer_name.trim()) nextErrors.customer_name = true;
+    if (!customer.customer_phone.trim()) nextErrors.customer_phone = true;
+    if (!customer.customer_address.trim()) nextErrors.customer_address = true;
     if (cart.length === 0) nextErrors.cart = true;
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -1220,23 +1040,11 @@ function CustomerPage({ lang, t }) {
       return;
     }
 
-    const dineInByStaff = isStaffOrderingModeV42 && customer.order_type === 'dine_in';
-
-    const safeCustomerForOrder = {
-      ...customer,
-      customer_name: dineInByStaff
-        ? (customer.customer_name.trim() || 'Cliente salón')
-        : customer.customer_name,
-      customer_phone: dineInByStaff
-        ? (customer.customer_phone.trim() || `MESA-${Date.now()}`)
-        : customer.customer_phone,
-      customer_address: dineInByStaff
-        ? (customer.customer_address.trim() || 'Comer aquí')
-        : normalizeSalamancaAddressFrontend(customer.customer_address),
-    };
+    const normalizedCustomerAddress = normalizeSalamancaAddressFrontend(customer.customer_address);
 
     const payload = {
-      ...safeCustomerForOrder,
+      ...customer,
+      customer_address: normalizedCustomerAddress,
       order_items: cart.map(item => ({ menu_item_id: item.id, quantity: item.quantity }))
     };
 
@@ -1349,31 +1157,21 @@ function CustomerPage({ lang, t }) {
         )}
         <h3>{t.total}: €{total.toFixed(2)}</h3>
 
-        {!(isStaffOrderingModeV42 && customer.order_type === 'dine_in') && (
-          <>
-            <div className="field-wrap">
-              <input className={errors.customer_name ? 'input-error' : ''} placeholder={t.customerName} value={customer.customer_name} onChange={e => updateCustomerField('customer_name', e.target.value)}/>
-              {errors.customer_name && <small className="field-error">{t.fieldRequired}</small>}
-            </div>
-            <div className="field-wrap">
-              <input className={errors.customer_phone ? 'input-error' : ''} placeholder={t.phone} value={customer.customer_phone} onChange={e => updateCustomerField('customer_phone', e.target.value)}/>
-              {errors.customer_phone && <small className="field-error">{t.fieldRequired}</small>}
-            </div>
-            <div className="field-wrap">
-              <textarea className={errors.customer_address ? 'input-error' : ''} placeholder={t.address} value={customer.customer_address} onChange={e => updateCustomerField('customer_address', e.target.value)}/>
-              {errors.customer_address && <small className="field-error">{t.fieldRequired}</small>}
-            </div>
-          </>
-        )}
-
-        {isStaffOrderingModeV42 && customer.order_type === 'dine_in' && (
-          <div className="dine-in-admin-note-v42">
-            Pedido interno de salón: nombre, teléfono y dirección son opcionales.
-          </div>
-        )}
+        <div className="field-wrap">
+          <input className={errors.customer_name ? 'input-error' : ''} placeholder={t.customerName} value={customer.customer_name} onChange={e => updateCustomerField('customer_name', e.target.value)}/>
+          {errors.customer_name && <small className="field-error">{t.fieldRequired}</small>}
+        </div>
+        <div className="field-wrap">
+          <input className={errors.customer_phone ? 'input-error' : ''} placeholder={t.phone} value={customer.customer_phone} onChange={e => updateCustomerField('customer_phone', e.target.value)}/>
+          {errors.customer_phone && <small className="field-error">{t.fieldRequired}</small>}
+        </div>
+        <div className="field-wrap">
+          <textarea className={errors.customer_address ? 'input-error' : ''} placeholder={t.address} value={customer.customer_address} onChange={e => updateCustomerField('customer_address', e.target.value)}/>
+          {errors.customer_address && <small className="field-error">{t.fieldRequired}</small>}
+        </div>
         <select value={customer.order_type} onChange={e => setCustomer({...customer, order_type: e.target.value})}>
           <option value="takeaway">{t.takeaway}</option>
-          {isStaffOrderingModeV42 && <option value="dine_in">{t.dineIn}</option>}
+          <option value="dine_in">{t.dineIn}</option>
           <option value="delivery">{t.delivery}</option>
         </select>
 
@@ -1786,7 +1584,7 @@ function RestaurantSettingsAdminV43({ lang, restaurantSettings, setRestaurantSet
   );
 }
 
-function AdminPage({ t, currentUser, lang, restaurantSettings, setRestaurantSettings }) {
+function AdminPage({ t, currentUser }) {
   const role = currentUser?.role || 'admin';
   const canManageMenu = role === 'admin';
   const canManageInventory = role === 'admin';
@@ -2151,6 +1949,7 @@ function AdminPage({ t, currentUser, lang, restaurantSettings, setRestaurantSett
 
   return (
     <main className="stack">
+      <RestaurantSettingsAdminV43 lang={lang} restaurantSettings={restaurantSettings} setRestaurantSettings={setRestaurantSettings} />
       <section className="admin-title">
         <div>
           <h2>{t.liveManagement}</h2>
@@ -2174,7 +1973,6 @@ function AdminPage({ t, currentUser, lang, restaurantSettings, setRestaurantSett
           {role === 'admin' && <button className={adminTab === 'customers' ? 'active' : ''} onClick={() => setAdminTab('customers')}>{t.tabCustomers}</button>}
           {canManageInventory && <button className={adminTab === 'inventory' ? 'active' : ''} onClick={() => setAdminTab('inventory')}>{t.tabInventory}</button>}
           {canManageMenu && <button className={adminTab === 'menu' ? 'active' : ''} onClick={() => setAdminTab('menu')}>{t.tabMenu}</button>}
-          {role === 'admin' && <button className={adminTab === 'settings' ? 'active' : ''} onClick={() => setAdminTab('settings')}>{t.tabSettings || 'Configuración'}</button>}
           <button className={adminTab === 'history' ? 'active' : ''} onClick={() => setAdminTab('history')}>{t.tabHistory}</button>
         </div>
       </section>
@@ -2249,15 +2047,6 @@ function AdminPage({ t, currentUser, lang, restaurantSettings, setRestaurantSett
             <div className="stat"><span>{t.netProfit}</span><b>€{Number(profitLoss?.net_profit || 0).toFixed(2)}</b></div>
           </div>
         </section>
-      )}
-
-
-      {role === 'admin' && adminTab === 'settings' && (
-        <RestaurantSettingsAdminV43
-          lang={lang}
-          restaurantSettings={restaurantSettings}
-          setRestaurantSettings={setRestaurantSettings}
-        />
       )}
 
       {role === 'admin' && adminTab === 'customers' && (
@@ -5143,9 +4932,7 @@ function App() {
       if (window.location.hash === '#admin' && !isAdmin) setPage('login');
     };
     window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, [isAdmin]);
-
+    
   useEffect(() => {
     api.get('/restaurant-settings/')
       .then(res => setRestaurantSettings(res.data))
@@ -5157,7 +4944,10 @@ function App() {
       }));
   }, []);
 
-  const t = { ...translations.en, ...translations[lang] };
+return () => window.removeEventListener('hashchange', onHashChange);
+  }, [isAdmin]);
+
+  const t = translations[lang];
 
   const loadCurrentUser = async () => {
     try {
@@ -5190,11 +4980,11 @@ function App() {
 
   return (
     <>
-      <Header page={page} setPage={setPage} lang={lang} setLang={setLang} t={t} isAdmin={isAdmin} currentUser={currentUser} logout={logout} restaurantSettings={restaurantSettings}/>
+      <Header page={page} setPage={setPage} lang={lang} setLang={setLang} t={t} isAdmin={isAdmin} currentUser={currentUser} logout={logout}/>
       {page === 'customer' && <CustomerPage lang={lang} t={t}/>}
       {page === 'tracking' && <TrackingPage t={t}/>}
       {page === 'login' && !isAdmin && <LoginPage t={t} onLogin={loginDone}/>}
-      {page === 'admin' && isAdmin && <AdminPage t={t} currentUser={currentUser} lang={lang} restaurantSettings={restaurantSettings} setRestaurantSettings={setRestaurantSettings}/>}
+      {page === 'admin' && isAdmin && <AdminPage t={t} currentUser={currentUser}/>}
       {page === 'accounting' && isAdmin && currentUser?.role === 'admin' && <AccountingPage t={t}/>}
     </>
   );

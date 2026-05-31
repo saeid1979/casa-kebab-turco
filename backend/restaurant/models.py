@@ -70,6 +70,9 @@ class Order(models.Model):
     customer_name = models.CharField(max_length=160)
     customer_phone = models.CharField(max_length=40)
     customer_address = models.TextField(blank=True)
+    customer_latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    customer_longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    customer_geocoded_address = models.TextField(blank=True)
     order_type = models.CharField(max_length=20, choices=ORDER_TYPE_CHOICES, default='takeaway')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     notes = models.TextField(blank=True)
@@ -274,3 +277,64 @@ class ComingSoonVisit(models.Model):
 
     def __str__(self):
         return f"{self.ip_address or 'unknown'} - {self.country or 'unknown'}"
+
+
+class DeliveryTracking(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="delivery_tracking")
+    token = models.CharField(max_length=80, unique=True, db_index=True)
+    rider_name = models.CharField(max_length=120, blank=True)
+    rider_phone = models.CharField(max_length=40, blank=True)
+    is_active = models.BooleanField(default=True)
+    started_at = models.DateTimeField(default=django_timezone.now)
+    stopped_at = models.DateTimeField(null=True, blank=True)
+    last_latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    last_longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    last_accuracy = models.FloatField(null=True, blank=True)
+    last_seen_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"DeliveryTracking order={self.order_id}"
+
+
+class DeliveryLocationPoint(models.Model):
+    tracking = models.ForeignKey(DeliveryTracking, on_delete=models.CASCADE, related_name="points")
+    latitude = models.DecimalField(max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7)
+    accuracy = models.FloatField(null=True, blank=True)
+    speed = models.FloatField(null=True, blank=True)
+    heading = models.FloatField(null=True, blank=True)
+    created_at = models.DateTimeField(default=django_timezone.now)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.tracking.order_id} - {self.latitude},{self.longitude}"
+
+
+class DeliveryRider(models.Model):
+    name = models.CharField(max_length=120)
+    phone = models.CharField(max_length=40, unique=True)
+    vehicle_type = models.CharField(max_length=80, blank=True, default="Moto")
+    vehicle_plate = models.CharField(max_length=80, blank=True)
+    is_active = models.BooleanField(default=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=django_timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.phone}"
+
+
+
+class RestaurantSettings(models.Model):
+    name = models.CharField(max_length=120, default="Casa de Kebab Turco")
+    phone = models.CharField(max_length=30, default="+34 613 473 564")
+    subtitle_es = models.CharField(max_length=200, default="Kebab fresco, pedidos rápidos, auténtico sabor turco")
+    subtitle_en = models.CharField(max_length=200, default="Fresh kebab, fast orders, authentic Turkish taste")
+    address = models.CharField(max_length=255, default="Calle García Lorca, 1, 37004 Salamanca, España")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+

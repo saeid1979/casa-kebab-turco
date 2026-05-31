@@ -1,0 +1,25 @@
+{
+  "name": "Casa de Kebab Rider",
+  "short_name": "Kebab Rider",
+  "description": "Aplicacion PWA para repartidores de Casa de Kebab Turco.",
+  "start_url": "/rider",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#111827",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/rider-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/rider-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

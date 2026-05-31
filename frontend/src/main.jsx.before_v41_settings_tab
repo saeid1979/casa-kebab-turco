@@ -159,7 +159,6 @@ const translations = {
     tabInventory: 'Inventario',
     tabMenu: 'Menú',
     tabHistory: 'Historial',
-    tabSettings: 'Configuración',
     todaySales: 'Ventas de hoy',
     todayOrders: 'Pedidos de hoy',
     activeOrders: 'Pedidos activos',
@@ -312,7 +311,6 @@ const translations = {
     tabInventory: 'Inventory',
     tabMenu: 'Menu',
     tabHistory: 'History',
-    tabSettings: 'Settings',
     todaySales: 'Today sales',
     todayOrders: 'Today orders',
     activeOrders: 'Active orders',
@@ -1025,8 +1023,6 @@ function CustomerPage({ lang, t }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [cart, setCart] = useState([]);
   const [customer, setCustomer] = useState({ customer_name: '', customer_phone: '', customer_address: '', order_type: 'takeaway', payment_method: 'cash_delivery', notes: '' });
-  const isStaffOrderingModeV42 = Boolean(localStorage.getItem('admin_access_token'));
-  const isDineInOrderV42 = customer.order_type === 'dine_in';
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [lastOrder, setLastOrder] = useState(null);
@@ -1045,14 +1041,6 @@ function CustomerPage({ lang, t }) {
       .then(res => setMenu(res.data.filter(x => x.is_available)))
       .catch(() => setMessage(t.backendFail));
   }, []);
-
-
-  // v42 force public customers away from dine_in
-  useEffect(() => {
-    if (!isStaffOrderingModeV42 && customer.order_type === 'dine_in') {
-      setCustomer(prev => ({ ...prev, order_type: 'takeaway' }));
-    }
-  }, [isStaffOrderingModeV42, customer.order_type]);
 
   const addToCart = item => {
     setCart(prev => {
@@ -1080,12 +1068,9 @@ function CustomerPage({ lang, t }) {
 
   const validateOrder = () => {
     const nextErrors = {};
-    const dineInByStaff = isStaffOrderingModeV42 && customer.order_type === 'dine_in';
-
-    if (!dineInByStaff && !customer.customer_name.trim()) nextErrors.customer_name = true;
-    if (!dineInByStaff && !customer.customer_phone.trim()) nextErrors.customer_phone = true;
-    if (!dineInByStaff && !customer.customer_address.trim()) nextErrors.customer_address = true;
-
+    if (!customer.customer_name.trim()) nextErrors.customer_name = true;
+    if (!customer.customer_phone.trim()) nextErrors.customer_phone = true;
+    if (!customer.customer_address.trim()) nextErrors.customer_address = true;
     if (cart.length === 0) nextErrors.cart = true;
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -1220,23 +1205,11 @@ function CustomerPage({ lang, t }) {
       return;
     }
 
-    const dineInByStaff = isStaffOrderingModeV42 && customer.order_type === 'dine_in';
-
-    const safeCustomerForOrder = {
-      ...customer,
-      customer_name: dineInByStaff
-        ? (customer.customer_name.trim() || 'Cliente salón')
-        : customer.customer_name,
-      customer_phone: dineInByStaff
-        ? (customer.customer_phone.trim() || `MESA-${Date.now()}`)
-        : customer.customer_phone,
-      customer_address: dineInByStaff
-        ? (customer.customer_address.trim() || 'Comer aquí')
-        : normalizeSalamancaAddressFrontend(customer.customer_address),
-    };
+    const normalizedCustomerAddress = normalizeSalamancaAddressFrontend(customer.customer_address);
 
     const payload = {
-      ...safeCustomerForOrder,
+      ...customer,
+      customer_address: normalizedCustomerAddress,
       order_items: cart.map(item => ({ menu_item_id: item.id, quantity: item.quantity }))
     };
 
@@ -1349,31 +1322,21 @@ function CustomerPage({ lang, t }) {
         )}
         <h3>{t.total}: €{total.toFixed(2)}</h3>
 
-        {!(isStaffOrderingModeV42 && customer.order_type === 'dine_in') && (
-          <>
-            <div className="field-wrap">
-              <input className={errors.customer_name ? 'input-error' : ''} placeholder={t.customerName} value={customer.customer_name} onChange={e => updateCustomerField('customer_name', e.target.value)}/>
-              {errors.customer_name && <small className="field-error">{t.fieldRequired}</small>}
-            </div>
-            <div className="field-wrap">
-              <input className={errors.customer_phone ? 'input-error' : ''} placeholder={t.phone} value={customer.customer_phone} onChange={e => updateCustomerField('customer_phone', e.target.value)}/>
-              {errors.customer_phone && <small className="field-error">{t.fieldRequired}</small>}
-            </div>
-            <div className="field-wrap">
-              <textarea className={errors.customer_address ? 'input-error' : ''} placeholder={t.address} value={customer.customer_address} onChange={e => updateCustomerField('customer_address', e.target.value)}/>
-              {errors.customer_address && <small className="field-error">{t.fieldRequired}</small>}
-            </div>
-          </>
-        )}
-
-        {isStaffOrderingModeV42 && customer.order_type === 'dine_in' && (
-          <div className="dine-in-admin-note-v42">
-            Pedido interno de salón: nombre, teléfono y dirección son opcionales.
-          </div>
-        )}
+        <div className="field-wrap">
+          <input className={errors.customer_name ? 'input-error' : ''} placeholder={t.customerName} value={customer.customer_name} onChange={e => updateCustomerField('customer_name', e.target.value)}/>
+          {errors.customer_name && <small className="field-error">{t.fieldRequired}</small>}
+        </div>
+        <div className="field-wrap">
+          <input className={errors.customer_phone ? 'input-error' : ''} placeholder={t.phone} value={customer.customer_phone} onChange={e => updateCustomerField('customer_phone', e.target.value)}/>
+          {errors.customer_phone && <small className="field-error">{t.fieldRequired}</small>}
+        </div>
+        <div className="field-wrap">
+          <textarea className={errors.customer_address ? 'input-error' : ''} placeholder={t.address} value={customer.customer_address} onChange={e => updateCustomerField('customer_address', e.target.value)}/>
+          {errors.customer_address && <small className="field-error">{t.fieldRequired}</small>}
+        </div>
         <select value={customer.order_type} onChange={e => setCustomer({...customer, order_type: e.target.value})}>
           <option value="takeaway">{t.takeaway}</option>
-          {isStaffOrderingModeV42 && <option value="dine_in">{t.dineIn}</option>}
+          <option value="dine_in">{t.dineIn}</option>
           <option value="delivery">{t.delivery}</option>
         </select>
 
@@ -2151,6 +2114,7 @@ function AdminPage({ t, currentUser, lang, restaurantSettings, setRestaurantSett
 
   return (
     <main className="stack">
+      <RestaurantSettingsAdminV43 lang={lang} restaurantSettings={restaurantSettings} setRestaurantSettings={setRestaurantSettings} />
       <section className="admin-title">
         <div>
           <h2>{t.liveManagement}</h2>
@@ -2174,7 +2138,6 @@ function AdminPage({ t, currentUser, lang, restaurantSettings, setRestaurantSett
           {role === 'admin' && <button className={adminTab === 'customers' ? 'active' : ''} onClick={() => setAdminTab('customers')}>{t.tabCustomers}</button>}
           {canManageInventory && <button className={adminTab === 'inventory' ? 'active' : ''} onClick={() => setAdminTab('inventory')}>{t.tabInventory}</button>}
           {canManageMenu && <button className={adminTab === 'menu' ? 'active' : ''} onClick={() => setAdminTab('menu')}>{t.tabMenu}</button>}
-          {role === 'admin' && <button className={adminTab === 'settings' ? 'active' : ''} onClick={() => setAdminTab('settings')}>{t.tabSettings || 'Configuración'}</button>}
           <button className={adminTab === 'history' ? 'active' : ''} onClick={() => setAdminTab('history')}>{t.tabHistory}</button>
         </div>
       </section>
@@ -2249,15 +2212,6 @@ function AdminPage({ t, currentUser, lang, restaurantSettings, setRestaurantSett
             <div className="stat"><span>{t.netProfit}</span><b>€{Number(profitLoss?.net_profit || 0).toFixed(2)}</b></div>
           </div>
         </section>
-      )}
-
-
-      {role === 'admin' && adminTab === 'settings' && (
-        <RestaurantSettingsAdminV43
-          lang={lang}
-          restaurantSettings={restaurantSettings}
-          setRestaurantSettings={setRestaurantSettings}
-        />
       )}
 
       {role === 'admin' && adminTab === 'customers' && (
