@@ -9,11 +9,11 @@ SECRET_KEY = config('SECRET_KEY', default='dev-secret-key-change-in-production')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    '.onrender.com',
-    'casadekebabturco.com',
-    'www.casadekebabturco.com',
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
+    "casadekebabturco.com",
+    "www.casadekebabturco.com",
 ]
 
 INSTALLED_APPS = [
@@ -31,8 +31,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,7 +60,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'restaurant_project.wsgi.application'
 
 DATABASES = {
-    'default': dj_database_url.config(
+    "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
     )
@@ -71,26 +71,22 @@ TIME_ZONE = 'Europe/Madrid'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:5173',
-    'http://localhost:5173',
-    'https://casa-kebab-frontend.onrender.com',
-    'https://casadekebabturco.com',
-    'https://www.casadekebabturco.com',
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://casa-kebab-frontend.onrender.com',
-    'https://casa-kebab-backend.onrender.com',
-    'https://casadekebabturco.com',
-    'https://www.casadekebabturco.com',
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://YOUR-FRONTEND.onrender.com",
+    "https://casadekebabturco.com",
+    "https://www.casadekebabturco.com",
 ]
 
 REST_FRAMEWORK = {
