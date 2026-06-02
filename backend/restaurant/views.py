@@ -630,6 +630,18 @@ class ComingSoonVisitAdminListView(APIView):
         return Response(data)
 
 
+def normalize_rider_phone(value):
+    """Normalize rider phone for local matching.
+    Accepts 613473564 and 34613473564 as the same rider.
+    """
+    digits = "".join(ch for ch in str(value or "") if ch.isdigit())
+    if digits.startswith("0034") and len(digits) > 9:
+        digits = digits[4:]
+    if digits.startswith("34") and len(digits) > 9:
+        digits = digits[2:]
+    return digits[-9:] if len(digits) >= 9 else digits
+
+
 def make_delivery_token():
     import secrets
     return secrets.token_urlsafe(32)
@@ -641,7 +653,11 @@ class DeliveryCreateTrackingView(APIView):
     def post(self, request):
         order_id = request.data.get("order_id")
         rider_name = str(request.data.get("rider_name", "")).strip()
-        rider_phone = str(request.data.get("rider_phone", "")).strip()
+        rider_phone_raw = str(request.data.get("rider_phone", "")).strip()
+        rider_phone = normalize_rider_phone(rider_phone_raw)
+
+        if not rider_phone:
+            return Response({"detail": "Rider phone is required."}, status=400)
 
         order = Order.objects.filter(id=order_id).first()
         if not order:
@@ -649,15 +665,22 @@ class DeliveryCreateTrackingView(APIView):
 
         tracking, created = DeliveryTracking.objects.get_or_create(
             order=order,
-            defaults={"token": make_delivery_token(), "rider_name": rider_name, "rider_phone": rider_phone, "is_active": True},
+            defaults={
+                "token": make_delivery_token(),
+                "rider_name": rider_name,
+                "rider_phone": rider_phone,
+                "is_active": True,
+            },
         )
 
         if not created:
             tracking.rider_name = rider_name or tracking.rider_name
-            tracking.rider_phone = rider_phone or tracking.rider_phone
+            tracking.rider_phone = rider_phone
+            if not tracking.token:
+                tracking.token = make_delivery_token()
             tracking.is_active = True
             tracking.stopped_at = None
-            tracking.save(update_fields=["rider_name", "rider_phone", "is_active", "stopped_at"])
+            tracking.save(update_fields=["rider_name", "rider_phone", "token", "is_active", "stopped_at"])
 
         try:
             order.status = "out_for_delivery"
@@ -665,12 +688,16 @@ class DeliveryCreateTrackingView(APIView):
         except Exception:
             pass
 
+        # Phone-based rider app: no WhatsApp token link is required.
+        # The frontend rider app polls /api/rider-app/current-delivery/?phone=...
         return Response({
             "ok": True,
+            "assigned": True,
+            "phone_based": True,
             "order_id": order.id,
             "tracking_code": f"CDKT-{order.id:06d}",
-            "token": tracking.token,
-            "delivery_url": f"/delivery?token={tracking.token}",
+            "rider_name": tracking.rider_name,
+            "rider_phone": tracking.rider_phone,
         })
 
 
@@ -1904,3 +1931,101 @@ class RestaurantSettingsView(APIView):
         return Response(serializer.data)
 
 
+
+
+
+# =========================
+# v43 Rider Auto Dispatch API
+# =========================
+
+class RiderCurrentAssignedDeliveryView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        phone_raw = str(request.query_params.get("phone", "")).strip()
+        phone = normalize_rider_phone(phone_raw)
+        if not phone:
+            return Response({"has_order": False, "detail": "Rider phone is required."}, status=400)
+
+        candidates = (
+            DeliveryTracking.objects
+            .select_related("order")
+            .filter(is_active=True)
+            .exclude(order__status__in=["delivered", "cancelled"])
+            .order_by("-started_at")[:100]
+        )
+
+        tracking = None
+        for item in candidates:
+            if normalize_rider_phone(item.rider_phone) == phone:
+                tracking = item
+                break
+
+        if not tracking:
+            return Response({"has_order": False})
+
+        order = tracking.order
+
+        return Response({
+            "has_order": True,
+            # Token is kept only internally for GPS/complete APIs. It is not sent by WhatsApp anymore.
+            "token": tracking.token,
+            "order_id": order.id,
+            "tracking_code": f"CDKT-{order.id:06d}",
+            "customer_name": order.customer_name,
+            "customer_phone": order.customer_phone,
+            "customer_address": order.customer_address,
+            "status": order.status,
+            "payment_method": order.payment_method,
+            "payment_status": order.payment_status,
+            "total_amount": order.total_amount,
+            "rider_name": tracking.rider_name,
+            "rider_phone": tracking.rider_phone,
+            "last_seen_at": tracking.last_seen_at,
+            "items": [
+                {
+                    "name": item.menu_item.name,
+                    "quantity": item.quantity,
+                    "line_total": item.line_total,
+                }
+                for item in order.items.select_related("menu_item").all()
+            ],
+        })
+
+
+class RiderAutoAcceptCurrentDeliveryView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        phone_raw = str(request.data.get("phone", "")).strip()
+        phone = normalize_rider_phone(phone_raw)
+        if not phone:
+            return Response({"detail": "Rider phone is required."}, status=400)
+
+        candidates = (
+            DeliveryTracking.objects
+            .select_related("order")
+            .filter(is_active=True)
+            .exclude(order__status__in=["delivered", "cancelled"])
+            .order_by("-started_at")[:100]
+        )
+        tracking = None
+        for item in candidates:
+            if normalize_rider_phone(item.rider_phone) == phone:
+                tracking = item
+                break
+
+        if not tracking:
+            return Response({"detail": "No active assigned delivery for this rider."}, status=404)
+
+        tracking.started_at = timezone.now()
+        tracking.save(update_fields=["started_at"])
+
+        tracking.order.status = "out_for_delivery"
+        tracking.order.save(update_fields=["status"])
+
+        return Response({
+            "ok": True,
+            "tracking_code": f"CDKT-{tracking.order.id:06d}",
+            "status": tracking.order.status,
+        })

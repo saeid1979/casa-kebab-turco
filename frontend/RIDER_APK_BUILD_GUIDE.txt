@@ -1,0 +1,58 @@
+Casa Kebab Rider APK Build Guide
+
+1) Install requirements on Windows:
+   - Node.js LTS
+   - Android Studio
+   - Android SDK
+   - Java JDK 17
+
+2) Open PowerShell:
+
+   cd D:\Python_project\Site_resturante\frontend
+
+3) Install packages:
+
+   npm install
+
+4) Build frontend:
+
+   npm run build
+
+5) Initialize Capacitor only first time:
+
+   npx cap init CasaKebabRider com.casakebabturco.rider --web-dir=dist
+
+   If it says Capacitor already initialized, ignore.
+
+6) Add Android project only first time:
+
+   npx cap add android
+
+   If android folder already exists, skip this.
+
+7) Sync web app to Android:
+
+   npx cap sync android
+
+8) Open Android Studio:
+
+   npx cap open android
+
+9) In Android Studio:
+   Build > Build Bundle(s) / APK(s) > Build APK(s)
+
+10) APK output usually appears in:
+   frontend\android\app\build\outputs\apk\debug\app-debug.apk
+
+Important:
+- For GPS and notifications on Android, real device must grant permissions.
+- For local testing from mobile, backend must be accessible from phone:
+  http://YOUR_PC_LAN_IP:8000/api
+- For production APK, use HTTPS domain in .env:
+  VITE_API_BASE_URL=https://your-domain.com/api
+
+Rider app URL inside APK:
+The app will open your React app. To go to rider app screen, use route:
+/rider-confirm
+
+If APK opens normal customer page, I can make the next version force APK to open directly on /rider-confirm.

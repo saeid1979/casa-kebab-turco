@@ -1,8 +1,8 @@
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').catch(() => {});
-  });
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
+  }).catch(() => {});
 }
 
 
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import './styles.css';
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+const API = 'http://192.168.0.18:8000/api';
 const RESTAURANT_PHONE = '34613473564';
 
 
@@ -3878,7 +3878,7 @@ function RiderAppPage({ lang }) {
       <section className="rider-app-card">
         <div className="rider-app-header">
           <div>
-            <h2>Casa de Kebab Rider</h2>
+            <h2>Casa de Kebab Rider Saeid</h2>
             <p>Aplicacion del repartidor</p>
           </div>
           <RiderInstallPWAButton />
@@ -4602,30 +4602,7 @@ function OrderDeliveryButtonFromList({ order }) {
         rider_phone: rider.phone,
       });
 
-      const token = res.data.token;
-      const riderUrl = `${window.location.origin}/rider?token=${token}`;
-      const customerTrackUrl = `${window.location.origin}/track`;
-
-      try {
-        await navigator.clipboard.writeText(riderUrl);
-      } catch (e) {}
-
-      const riderPhoneClean = String(rider.phone || '').replace(/\D/g, '');
-      const customerPhoneClean = String(order.customer_phone || order.phone || '').replace(/\D/g, '');
-
-      const riderMessage = encodeURIComponent(
-        `Casa de Kebab Turco\nNuevo pedido para repartir\nPedido: ${res.data.tracking_code || orderId}\nCliente: ${order.customer_name || order.name || ''}\nDireccion: ${order.customer_address || order.address || ''}\nAbre este enlace. Al abrirlo, el pedido se confirma automaticamente para reparto:\n${riderUrl}`
-      );
-
-      const customerMessage = encodeURIComponent(
-        `Casa de Kebab Turco\nSu pedido esta en camino.\nPedido: ${res.data.tracking_code || orderId}\nPuede seguir al repartidor aqui:\n${customerTrackUrl}\nTelefono usado en el pedido: ${order.customer_phone || order.phone || ''}`
-      );
-
-      if (riderPhoneClean) {
-        window.open(`https://wa.me/${riderPhoneClean}?text=${riderMessage}`, '_blank');
-      }
-
-      setMessage(`Pedido asignado a ${rider.name}. Link enviado al repartidor. Cuando abra el link, el pedido queda confirmado para reparto.`);
+      setMessage(`Pedido ${res.data.tracking_code || orderId} asignado a ${rider.name}. Aparecerá automáticamente en la app del repartidor.`);
       setOpen(false);
 
       if (typeof fetchData === 'function') {
@@ -4646,7 +4623,7 @@ function OrderDeliveryButtonFromList({ order }) {
         onClick={openPicker}
         disabled={loading}
       >
-        {loading ? 'Enviando...' : 'Enviar a repartidor'}
+        {loading ? 'Asignando...' : 'Asignar a repartidor'}
       </button>
 
       {open && (
@@ -4685,7 +4662,7 @@ function OrderDeliveryButtonFromList({ order }) {
             <div className="rider-picker-actions">
               <button type="button" onClick={loadRiders}>Actualizar lista</button>
               <button type="button" className="confirm-rider-btn" onClick={assignToSelectedRider} disabled={loading || !selectedRiderId}>
-                Confirmar y enviar
+                Confirmar asignación
               </button>
             </div>
           </div>
@@ -4718,33 +4695,7 @@ function OrderDeliveryButton({ order }) {
         rider_phone: riderPhone,
       });
 
-      const token = res.data.token;
-      const riderUrl = `${window.location.origin}/rider?token=${token}`;
-      const customerTrackUrl = `${window.location.origin}/track`;
-
-      try {
-        await navigator.clipboard.writeText(riderUrl);
-      } catch (e) {}
-
-      const riderPhoneClean = String(riderPhone).replace(/\D/g, '');
-      const customerPhoneClean = String(order.customer_phone || order.phone || '').replace(/\D/g, '');
-
-      const riderMessage = encodeURIComponent(
-        `Casa de Kebab Turco\nNuevo pedido para repartir\nPedido: ${res.data.tracking_code || orderId}\nCliente: ${order.customer_name || order.name || ''}\nDireccion: ${order.customer_address || order.address || ''}\nAbre este enlace. Al abrirlo, el pedido se confirma automaticamente para reparto:\n${riderUrl}`
-      );
-
-      const customerMessage = encodeURIComponent(
-        `Casa de Kebab Turco\nSu pedido esta en camino.\nPedido: ${res.data.tracking_code || orderId}\nPuede seguir al repartidor aqui:\n${customerTrackUrl}`
-      );
-
-      const openRiderWhatsApp = window.confirm(
-        `Reparto creado.\n\nEnlace del repartidor copiado:\n${riderUrl}\n\nQuieres abrir WhatsApp para el repartidor?`
-      );
-
-      if (openRiderWhatsApp && riderPhoneClean) {
-        window.open(`https://wa.me/${riderPhoneClean}?text=${riderMessage}`, '_blank');
-      }
-
+      alert(`Pedido ${res.data.tracking_code || orderId} asignado al repartidor. Aparecerá automáticamente en la app.`);
 
       if (typeof fetchData === 'function') {
         fetchData();
@@ -4763,7 +4714,7 @@ function OrderDeliveryButton({ order }) {
       onClick={assignToRider}
       disabled={loading}
     >
-      {loading ? 'Enviando...' : 'Enviar a repartidor'}
+      {loading ? 'Asignando...' : 'Asignar a repartidor'}
     </button>
   );
 }
@@ -5111,7 +5062,620 @@ function RiderManagementPanel({ onSelectRider }) {
 }
 
 
+
+function RiderAutoDispatchAppV43({ lang = 'es' }) {
+  const [phone, setPhone] = useState(() => localStorage.getItem('rider_app_phone_v43') || '');
+  const [enabled, setEnabled] = useState(() => localStorage.getItem('rider_app_enabled_v43') === '1');
+  const [order, setOrder] = useState(null);
+  const [message, setMessage] = useState('');
+  const [coords, setCoords] = useState(null);
+  const [watchId, setWatchId] = useState(null);
+  const [lastToken, setLastToken] = useState(() => localStorage.getItem('rider_last_token_v43') || '');
+
+  const beep = () => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = 880;
+      gain.gain.value = 0.25;
+      oscillator.connect(gain);
+      gain.connect(audioCtx.destination);
+      oscillator.start();
+      setTimeout(() => {
+        oscillator.stop();
+        audioCtx.close();
+      }, 700);
+    } catch {}
+  };
+
+  const notify = (title, body) => {
+    try {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, { body, icon: '/icon-192.png' });
+      }
+    } catch {}
+  };
+
+  const savePhone = () => {
+    const clean = phone.trim();
+    if (!clean) {
+      setMessage('Introduce el teléfono del repartidor.');
+      return;
+    }
+    localStorage.setItem('rider_app_phone_v43', clean);
+    setMessage('Teléfono guardado.');
+  };
+
+  const activateApp = async () => {
+    if (!phone.trim()) {
+      setMessage('Primero introduce el teléfono del repartidor.');
+      return;
+    }
+
+    localStorage.setItem('rider_app_phone_v43', phone.trim());
+    localStorage.setItem('rider_app_enabled_v43', '1');
+    setEnabled(true);
+
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      try {
+        await Notification.requestPermission();
+      } catch {}
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => setMessage('App del repartidor activa. Esperando pedidos...'),
+        () => setMessage('Activa permiso GPS para enviar ubicación al cliente.'),
+        { enableHighAccuracy: true, timeout: 12000 }
+      );
+    } else {
+      setMessage('Este móvil no soporta GPS.');
+    }
+
+    beep();
+  };
+
+  const sendLocation = async (position, token) => {
+    const c = position.coords;
+    setCoords({ latitude: c.latitude, longitude: c.longitude, accuracy: c.accuracy });
+    await axios.post(`${API}/delivery/location/`, {
+      token,
+      latitude: c.latitude,
+      longitude: c.longitude,
+      accuracy: c.accuracy,
+      speed: c.speed,
+      heading: c.heading,
+    });
+  };
+
+  const startGpsForOrder = (token) => {
+    if (!navigator.geolocation || !token) {
+      setMessage('GPS no disponible.');
+      return;
+    }
+
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+    }
+
+    const id = navigator.geolocation.watchPosition(
+      (pos) => sendLocation(pos, token).catch(() => setMessage('No se pudo enviar GPS.')),
+      () => setMessage('Permiso GPS denegado. Activa ubicación en el móvil.'),
+      { enableHighAccuracy: true, maximumAge: 3000, timeout: 15000 }
+    );
+
+    setWatchId(id);
+    setMessage('Pedido aceptado automáticamente. GPS activo.');
+  };
+
+  const loadCurrentOrder = async () => {
+    if (!enabled || !phone.trim()) return;
+
+    try {
+      const res = await axios.get(`${API}/rider-app/current-delivery/?phone=${encodeURIComponent(phone.trim())}`);
+
+      if (!res.data.has_order) {
+        setOrder(null);
+        return;
+      }
+
+      const incoming = res.data;
+      setOrder(incoming);
+
+      if (incoming.token && incoming.token !== lastToken) {
+        setLastToken(incoming.token);
+        localStorage.setItem('rider_last_token_v43', incoming.token);
+
+        beep();
+        notify('Nuevo pedido asignado', `${incoming.tracking_code} - ${incoming.customer_address}`);
+
+        try {
+          await axios.post(`${API}/rider-app/auto-accept/`, { phone: phone.trim() });
+        } catch {}
+
+        startGpsForOrder(incoming.token);
+      }
+    } catch {
+      setMessage('No se pudo consultar pedido asignado.');
+    }
+  };
+
+  useEffect(() => {
+    loadCurrentOrder();
+    const timer = setInterval(loadCurrentOrder, 6000);
+    return () => clearInterval(timer);
+  }, [enabled, phone, lastToken]);
+
+  const completeDelivery = async () => {
+    if (!order?.token) return;
+
+    try {
+      await axios.post(`${API}/delivery/complete/`, { token: order.token });
+
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        setWatchId(null);
+      }
+
+      setMessage('Pedido entregado y cerrado.');
+      setOrder(null);
+      setLastToken('');
+      localStorage.removeItem('rider_last_token_v43');
+    } catch {
+      setMessage('No se pudo cerrar el pedido.');
+    }
+  };
+
+  const openGoogleMaps = () => {
+    if (!order?.customer_address) return;
+    const origin = coords ? `${coords.latitude},${coords.longitude}` : '';
+    const url = origin
+      ? `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodeURIComponent(order.customer_address + ', Salamanca')}&travelmode=driving`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.customer_address + ', Salamanca')}`;
+    window.open(url, '_blank');
+  };
+
+  return (
+    <main className="rider-auto-v43-page">
+      <section className="rider-auto-v43-card">
+        <div className="rider-auto-v43-header">
+          <div>
+            <h1>Casa de Kebab Rider Saeid </h1>
+            <p>App automática del repartidor</p>
+          </div>
+          <span className={enabled ? 'active' : ''}>{enabled ? 'Activo' : 'Inactivo'}</span>
+        </div>
+
+        <div className="rider-auto-v43-login">
+          <label>Teléfono del repartidor</label>
+          <input
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            placeholder="Ej: 613473564"
+          />
+          <div>
+            <button onClick={savePhone}>Guardar teléfono</button>
+            <button className="primary" onClick={activateApp}>Activar app + GPS</button>
+          </div>
+        </div>
+
+        {message && <div className="rider-auto-v43-message">{message}</div>}
+
+        {!order && (
+          <div className="rider-auto-v43-waiting">
+            <strong>Esperando pedido asignado...</strong>
+            <p>Cuando el admin asigne un pedido a este teléfono, aparecerá aquí automáticamente.</p>
+          </div>
+        )}
+
+        {order && (
+          <div className="rider-auto-v43-order">
+            <div className="rider-auto-v43-order-head">
+              <strong>{order.tracking_code}</strong>
+              <span>{order.status}</span>
+            </div>
+
+            <p><b>Cliente:</b> {order.customer_name}</p>
+            <p><b>Teléfono:</b> {order.customer_phone}</p>
+            <p><b>Dirección:</b> {order.customer_address}</p>
+            <p><b>Total:</b> €{Number(order.total_amount || 0).toFixed(2)}</p>
+            <p><b>Pago:</b> {order.payment_method} / {order.payment_status}</p>
+
+            <div className="rider-auto-v43-items">
+              {order.items?.map((item, idx) => (
+                <div key={idx}>
+                  <span>{item.name}</span>
+                  <b>x {item.quantity}</b>
+                </div>
+              ))}
+            </div>
+
+            {coords && (
+              <div className="rider-auto-v43-gps">
+                GPS activo: {coords.latitude.toFixed(6)}, {coords.longitude.toFixed(6)}
+                <br />
+                Precisión: {Number(coords.accuracy || 0).toFixed(0)} m
+              </div>
+            )}
+
+            <div className="rider-auto-v43-actions">
+              <button onClick={openGoogleMaps}>Abrir ruta</button>
+              <a href={`tel:${order.customer_phone}`}>Llamar cliente</a>
+              <button className="delivered" onClick={completeDelivery}>Entregado</button>
+            </div>
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
+
+
+function RiderConfirmDeliveryAppV44({ lang = 'es' }) {
+  const normalizeRiderPhone = (value) => {
+    let digits = String(value || '').replace(/\D/g, '');
+    if (digits.startsWith('34') && digits.length === 11) digits = digits.slice(2);
+    return digits;
+  };
+
+  const [phone, setPhone] = useState(() => localStorage.getItem('rider_phone_v44') || '');
+  const [isActive, setIsActive] = useState(() => localStorage.getItem('rider_active_v44') === '1');
+  const [order, setOrder] = useState(null);
+  const [message, setMessage] = useState('');
+  const [coords, setCoords] = useState(null);
+  const [watchId, setWatchId] = useState(null);
+  const [lastToken, setLastToken] = useState(() => localStorage.getItem('rider_last_token_v44') || '');
+  const [gpsEnabled, setGpsEnabled] = useState(false);
+  const [apkDebug, setApkDebug] = useState('APK DEBUG READY | API=' + API);
+
+  const playAlert = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const gain = ctx.createGain();
+      gain.gain.value = 0.25;
+      gain.connect(ctx.destination);
+
+      [880, 1040, 880].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        osc.connect(gain);
+        osc.start(ctx.currentTime + idx * 0.22);
+        osc.stop(ctx.currentTime + idx * 0.22 + 0.18);
+      });
+
+      setTimeout(() => ctx.close(), 1000);
+    } catch {}
+  };
+
+  const showNotification = (title, body) => {
+    try {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, { body, icon: '/icon-192.png', badge: '/icon-192.png' });
+      }
+    } catch {}
+  };
+
+  const sendLocation = async (position, token) => {
+    const c = position.coords;
+    setCoords({
+      latitude: c.latitude,
+      longitude: c.longitude,
+      accuracy: c.accuracy,
+      speed: c.speed,
+      heading: c.heading,
+    });
+
+    await axios.post(`${API}/delivery/location/`, {
+      token,
+      latitude: c.latitude,
+      longitude: c.longitude,
+      accuracy: c.accuracy,
+      speed: c.speed,
+      heading: c.heading,
+    });
+  };
+
+  const startGps = (token) => {
+    if (!navigator.geolocation || !token) {
+      return;
+    }
+
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+    }
+
+    const id = navigator.geolocation.watchPosition(
+      (pos) => sendLocation(pos, token).catch((err) => {
+      }),
+      (err) => {
+        setGpsEnabled(false);
+        setMessage('Permiso GPS denegado. Activa la ubicación del móvil.');
+      },
+      { enableHighAccuracy: true, maximumAge: 3000, timeout: 15000 }
+    );
+
+    setWatchId(id);
+    setGpsEnabled(true);
+  };
+
+  const autoAcceptOrder = async (riderPhone) => {
+    try {
+      const res = await axios.post(`${API}/rider-app/auto-accept/`, { phone: riderPhone });
+    } catch (err) {
+    }
+  };
+
+  const loadAssignedOrder = async (forcedPhone = null) => {
+    const cleanPhone = normalizeRiderPhone(forcedPhone || phone);
+
+    if (!cleanPhone) {
+      setMessage('Introduce el teléfono del repartidor.');
+      setApkDebug(`NO PHONE | API=${API}`);
+      return;
+    }
+
+    if (!isActive && !forcedPhone) {
+      setApkDebug(`NOT ACTIVE YET | phone=${cleanPhone} | API=${API}`);
+      return;
+    }
+
+    const url = `${API}/rider-app/current-delivery/?phone=${encodeURIComponent(cleanPhone)}`;
+    setApkDebug(`CALLING...\n${url}`);
+
+    try {
+      const res = await axios.get(url, { headers: { Accept: 'application/json' }, timeout: 12000 });
+
+      setApkDebug(
+        `OK ${res.status}\nURL: ${url}\nDATA: ${JSON.stringify(res.data, null, 2)}`
+      );
+
+      if (!res.data?.has_order) {
+        setOrder(null);
+        setMessage('Sin pedido asignado para este teléfono.');
+        return;
+      }
+
+      const incomingOrder = res.data;
+      setOrder(incomingOrder);
+      setMessage('Pedido recibido en la app.');
+
+      if (incomingOrder.token && incomingOrder.token !== lastToken) {
+        setLastToken(incomingOrder.token);
+        localStorage.setItem('rider_last_token_v44', incomingOrder.token);
+
+        playAlert();
+        showNotification('Nuevo pedido asignado', `${incomingOrder.tracking_code} - ${incomingOrder.customer_address}`);
+
+        try {
+          await autoAcceptOrder(cleanPhone);
+        } catch {}
+
+        startGps(incomingOrder.token);
+        setMessage('Pedido nuevo recibido, aceptado automáticamente y GPS iniciado si hay permiso.');
+      }
+    } catch (err) {
+      const status = err.response?.status || 'NETWORK';
+      const data = err.response?.data || err.message || String(err);
+      setMessage('No se pudo consultar el pedido asignado. Revisa conexión.');
+      setApkDebug(
+        `ERROR ${status}\nURL: ${url}\nMESSAGE: ${JSON.stringify(data, null, 2)}`
+      );
+    }
+  };
+
+  const activateRiderApp = async () => {
+    const cleanPhone = normalizeRiderPhone(phone);
+
+    if (!cleanPhone) {
+      setMessage('Introduce el teléfono del repartidor.');
+      return;
+    }
+
+    setPhone(cleanPhone);
+    localStorage.setItem('rider_phone_v44', cleanPhone);
+    localStorage.setItem('rider_active_v44', '1');
+    setIsActive(true);
+    setMessage('App activa. Consultando pedido asignado...');
+
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      try { await Notification.requestPermission(); } catch {}
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          setGpsEnabled(true);
+        },
+        (err) => {
+          setGpsEnabled(false);
+        },
+        { enableHighAccuracy: true, timeout: 12000 }
+      );
+    }
+
+    playAlert();
+    await loadAssignedOrder(cleanPhone);
+  };
+
+  useEffect(() => {
+    if (!isActive) return;
+    loadAssignedOrder();
+    const timer = setInterval(() => loadAssignedOrder(), 5000);
+    return () => clearInterval(timer);
+  }, [isActive, phone, lastToken]);
+
+  const openRoute = () => {
+    if (!order?.customer_address) return;
+    const destination = encodeURIComponent(order.customer_address + ', Salamanca, España');
+    const origin = coords ? `${coords.latitude},${coords.longitude}` : '';
+    const url = origin
+      ? `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`
+      : `https://www.google.com/maps/search/?api=1&query=${destination}`;
+    window.open(url, '_blank');
+  };
+
+  const callCustomer = () => {
+    if (!order?.customer_phone) return;
+    window.location.href = `tel:${order.customer_phone}`;
+  };
+
+  const confirmDelivered = async () => {
+    if (!order?.token) {
+      setMessage('No hay pedido activo.');
+      return;
+    }
+
+    const ok = window.confirm('¿Confirmas que el pedido fue entregado al cliente?');
+    if (!ok) return;
+
+    try {
+      await axios.post(`${API}/delivery/complete/`, { token: order.token });
+
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        setWatchId(null);
+      }
+
+      setOrder(null);
+      setCoords(null);
+      setLastToken('');
+      localStorage.removeItem('rider_last_token_v44');
+      setMessage('Pedido marcado como entregado y cerrado correctamente.');
+      playAlert();
+    } catch (err) {
+      setMessage('No se pudo cerrar el pedido. Revisa conexión.');
+    }
+  };
+
+  const stopRiderApp = () => {
+    localStorage.removeItem('rider_active_v44');
+    setIsActive(false);
+    setOrder(null);
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      setWatchId(null);
+    }
+    setMessage('App del repartidor detenida.');
+  };
+
+  return (
+    <main className="rider-v44-page">
+      <section className="rider-v44-card">
+        <div className="rider-v44-top">
+          <div>
+            <h1>Casa de Kebab Rider Saeid</h1>
+            <div style={{background:'#22c55e', color:'white', padding:'6px 12px', borderRadius:'8px', display:'inline-block', margin:'6px 0 10px', fontWeight:'bold'}}>
+              Rider App v45 APK DEBUG
+            </div>
+            <p>Confirmación y entrega de pedidos</p>
+          </div>
+          <span className={isActive ? 'online' : 'offline'}>
+            {isActive ? 'ONLINE' : 'OFFLINE'}
+          </span>
+        </div>
+
+        <div className="rider-v44-login">
+          <label>Teléfono del repartidor</label>
+          <input
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            placeholder="Ejemplo: 613473564"
+          />
+          <div className="rider-v44-login-actions">
+            <button onClick={activateRiderApp}>Activar app</button>
+            <button className="secondary" onClick={stopRiderApp}>Detener</button>
+          </div>
+        </div>
+
+        <div className="rider-v44-status-grid">
+          <div><span>GPS</span><strong>{gpsEnabled ? 'Activo' : 'Pendiente'}</strong></div>
+          <div><span>Pedido</span><strong>{order ? order.tracking_code : '-'}</strong></div>
+          <div><span>Estado</span><strong>{order ? order.status : 'Sin pedido'}</strong></div>
+        </div>
+
+        {message && <div className="rider-v44-message">{message}</div>}
+
+        <div style={{
+          background: '#111827',
+          color: '#22c55e',
+          padding: '12px',
+          borderRadius: '12px',
+          fontSize: '12px',
+          whiteSpace: 'pre-wrap',
+          margin: '12px 0',
+          overflowX: 'auto'
+        }}>
+          {apkDebug}
+        </div>
+
+        {!order && (
+          <div className="rider-v44-waiting">
+            <strong>Esperando pedido...</strong>
+            <p>Cuando el admin asigne un pedido a este teléfono, aparecerá automáticamente aquí.</p>
+          </div>
+        )}
+
+        {order && (
+          <div className="rider-v44-order">
+            <div className="rider-v44-order-header">
+              <div><h2>{order.tracking_code}</h2><p>Pedido aceptado automáticamente</p></div>
+              <span>EN REPARTO</span>
+            </div>
+
+            <div className="rider-v44-info">
+              <p><b>Cliente:</b> {order.customer_name}</p>
+              <p><b>Teléfono:</b> {order.customer_phone}</p>
+              <p><b>Dirección:</b> {order.customer_address}</p>
+              <p><b>Total:</b> €{Number(order.total_amount || 0).toFixed(2)}</p>
+              <p><b>Pago:</b> {order.payment_method} / {order.payment_status}</p>
+            </div>
+
+            <div className="rider-v44-items">
+              <h3>Productos</h3>
+              {order.items?.map((item, idx) => (<div key={idx}><span>{item.name}</span><b>x {item.quantity}</b></div>))}
+            </div>
+
+            {coords && (
+              <div className="rider-v44-gps">
+                <b>GPS activo</b>
+                <span>{coords.latitude.toFixed(6)}, {coords.longitude.toFixed(6)}</span>
+                <small>Precisión: {Number(coords.accuracy || 0).toFixed(0)} m</small>
+              </div>
+            )}
+
+            <div className="rider-v44-actions">
+              <button onClick={openRoute}>Abrir ruta</button>
+              <button onClick={callCustomer}>Llamar cliente</button>
+              <button className="delivered" onClick={confirmDelivered}>Entregado</button>
+            </div>
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
+
+
+function isRunningInsideCapacitorV451() {
+  return Boolean(
+    window.Capacitor ||
+    window.location.protocol === 'capacitor:' ||
+    (window.location.protocol === 'https:' && window.location.hostname === 'localhost')
+  );
+}
+
 function App() {
+  const route = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+  if (isRunningInsideCapacitorV451()) { return <RiderConfirmDeliveryAppV44 lang="es" />; }
+
+  if (route.includes('app=rider') || route.includes('/rider-confirm')) { return <RiderConfirmDeliveryAppV44 lang="es" />; }
+  if (route.includes('/rider-app')) { return <RiderAutoDispatchAppV43 lang="es" />; }
   const [restaurantSettings, setRestaurantSettings] = useState(null);
   if (window.location.pathname.includes('/rider')) { return <RiderAppPage lang="es" />; }
 

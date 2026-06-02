@@ -1,0 +1,21 @@
+{
+  "appId": "com.casakebabturco.rider",
+  "appName": "CasaKebabRider",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {
+    "Geolocation": {
+      "permissions": [
+        "location"
+      ]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#f59e0b"
+    }
+  }
+}

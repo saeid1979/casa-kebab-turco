@@ -5941,3 +5941,425 @@ th, td {
 .restaurant-settings-grid input{margin:0;border:2px solid #f0ddbd;background:#fffaf2;font-weight:800}
 .restaurant-settings-message{background:#dcfce7;color:#14532d;border-radius:14px;padding:10px;font-weight:900}
 @media(max-width:800px){.restaurant-settings-grid{grid-template-columns:1fr}}
+
+
+/* v43 Rider Auto Dispatch App */
+.rider-auto-v43-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #78350f, #111827 55%, #030712);
+  padding: 20px;
+  display: grid;
+  place-items: center;
+}
+
+.rider-auto-v43-card {
+  width: min(960px, 100%);
+  background: #fff7ed;
+  border-radius: 28px;
+  padding: 22px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.28);
+  display: grid;
+  gap: 16px;
+}
+
+.rider-auto-v43-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.rider-auto-v43-header h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.rider-auto-v43-header p {
+  margin: 4px 0 0;
+  color: #78350f;
+  font-weight: 800;
+}
+
+.rider-auto-v43-header span {
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+}
+
+.rider-auto-v43-header span.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.rider-auto-v43-login {
+  background: white;
+  border: 1px solid #fed7aa;
+  border-radius: 18px;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.rider-auto-v43-login label {
+  font-weight: 900;
+}
+
+.rider-auto-v43-login div {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rider-auto-v43-login button,
+.rider-auto-v43-actions button,
+.rider-auto-v43-actions a {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 15px;
+  font-weight: 900;
+  background: #f59e0b;
+  color: #111827;
+  text-decoration: none;
+  text-align: center;
+}
+
+.rider-auto-v43-login button.primary {
+  background: #16a34a;
+  color: white;
+}
+
+.rider-auto-v43-message {
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 16px;
+  padding: 13px;
+  font-weight: 900;
+}
+
+.rider-auto-v43-waiting,
+.rider-auto-v43-order {
+  background: white;
+  border: 1px solid #fed7aa;
+  border-radius: 20px;
+  padding: 18px;
+}
+
+.rider-auto-v43-waiting strong {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.rider-auto-v43-waiting p {
+  color: #78350f;
+  font-weight: 800;
+}
+
+.rider-auto-v43-order-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rider-auto-v43-order-head strong {
+  font-size: 24px;
+}
+
+.rider-auto-v43-order-head span {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 900;
+}
+
+.rider-auto-v43-items {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.rider-auto-v43-items div {
+  display: flex;
+  justify-content: space-between;
+  background: #fff7ed;
+  border-radius: 12px;
+  padding: 10px;
+  font-weight: 800;
+}
+
+.rider-auto-v43-gps {
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 14px;
+  padding: 12px;
+  font-weight: 900;
+  margin: 12px 0;
+}
+
+.rider-auto-v43-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.rider-auto-v43-actions .delivered {
+  background: #111827;
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .rider-auto-v43-card {
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .rider-auto-v43-header,
+  .rider-auto-v43-order-head {
+    flex-direction: column;
+  }
+
+  .rider-auto-v43-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* v44 Rider Confirm Delivery App */
+.rider-v44-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #7c2d12, #111827 50%, #020617);
+  padding: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.rider-v44-card {
+  width: min(760px, 100%);
+  background: #fff7ed;
+  border-radius: 28px;
+  padding: 22px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  display: grid;
+  gap: 16px;
+}
+
+.rider-v44-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.rider-v44-top h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.rider-v44-top p {
+  margin: 5px 0 0;
+  color: #92400e;
+  font-weight: 800;
+}
+
+.rider-v44-top span {
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+}
+
+.rider-v44-top span.online {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.rider-v44-top span.offline {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.rider-v44-login,
+.rider-v44-order,
+.rider-v44-waiting {
+  background: white;
+  border: 1px solid #fed7aa;
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.rider-v44-login label {
+  font-weight: 900;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.rider-v44-login input {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.rider-v44-login-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rider-v44-login-actions button,
+.rider-v44-actions button {
+  border: none;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-weight: 900;
+  background: #f59e0b;
+  color: #111827;
+}
+
+.rider-v44-login-actions button.secondary {
+  background: #111827;
+  color: white;
+}
+
+.rider-v44-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.rider-v44-status-grid div {
+  background: #111827;
+  color: white;
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 4px;
+}
+
+.rider-v44-status-grid span {
+  color: #fbbf24;
+  font-weight: 800;
+}
+
+.rider-v44-status-grid strong {
+  font-size: 18px;
+}
+
+.rider-v44-message {
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 16px;
+  padding: 13px;
+  font-weight: 900;
+}
+
+.rider-v44-waiting strong {
+  font-size: 22px;
+}
+
+.rider-v44-waiting p {
+  color: #78350f;
+  font-weight: 800;
+}
+
+.rider-v44-order-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.rider-v44-order-header h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.rider-v44-order-header p {
+  margin: 4px 0 0;
+  color: #16a34a;
+  font-weight: 900;
+}
+
+.rider-v44-order-header span {
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-weight: 900;
+}
+
+.rider-v44-info {
+  background: #fff7ed;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.rider-v44-info p {
+  margin: 7px 0;
+}
+
+.rider-v44-items {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.rider-v44-items h3 {
+  margin-bottom: 4px;
+}
+
+.rider-v44-items div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 10px;
+  font-weight: 800;
+}
+
+.rider-v44-gps {
+  margin-top: 14px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 16px;
+  padding: 12px;
+  display: grid;
+  gap: 3px;
+  font-weight: 900;
+}
+
+.rider-v44-actions {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.rider-v44-actions .delivered {
+  background: #16a34a;
+  color: white;
+  font-size: 17px;
+}
+
+@media (max-width: 680px) {
+  .rider-v44-card {
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .rider-v44-top,
+  .rider-v44-order-header {
+    flex-direction: column;
+  }
+
+  .rider-v44-status-grid,
+  .rider-v44-login-actions,
+  .rider-v44-actions {
+    grid-template-columns: 1fr;
+  }
+}
